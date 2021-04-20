@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="vue.js"></script>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            user-select:none;
+
+        }
+        body{
+            background-image:url(images/xingkong.jpg);
+            background-repeat:repeat-y ;
+            background-size: 100%;
+            background-position: center 0;
+        }
+        #Register{
+            color:white;
+            background-color:black;
+            padding:10px;   
+            width: 200px;;
+            margin:20vh auto;
+            display: grid;
+            align-items: flex-start;
+            justify-items: center;
+            border-radius: 24px;
+            box-shadow: 0 0 24px rgba(250, 234, 16, 0.25);
+            box-shadow: 0 0 10px white;
+        }
+        #Register h2{
+            margin:10px 0 20px;
+            font-size: 20px;
+        }
+        #Register .input{
+            color: white;
+            background-color: black;
+            outline: none;
+            box-shadow: 0 0 10px white;
+        }
+        #Register small{
+            text-align: center;
+        }
+        #Register a:link{
+            color: rgb(105, 158, 26);
+        }
+        #submit{
+            background-color:black;
+            border-radius: 6px;
+            width:170px;
+            height: 25px;
+            color:white;
+            box-shadow: 0 0 10px greenyellow;
+            outline: none;
+        }
+        #Register small{
+            font-size: x-small;
+        }
+        #todolist{
+            padding:10px;
+            width: 200px;
+            margin:120px auto;
+            position: relative;
+            display: grid;
+            background-color: rgba(150, 128, 230, 0.692);
+            box-shadow: 0 0 24px white;
+        }
+        #list li{
+            box-shadow:0 0 3px rgb(245, 186, 245);
+            background-color:rgba(129, 34, 129, 0.205);
+            list-style: none;
+            margin:5px;
+            padding:2px 0 2px 8px;
+            cursor: pointer;
+        }
+        #list .cheak{
+            cursor: pointer;
+        }
+        #list .Delete{
+            margin: 2px;
+            width: 15px;
+            outline:none;
+            position: relative;
+            float: right;
+            background:url(images/b9.png);
+            cursor: pointer;
+        }
+        #list .deleted{
+            text-decoration: line-through;
+            font-style:italic;
+            color:rgba(0, 0, 0, 0.452);
+        }
+        #listHead span{
+            cursor: pointer;
+            color:rgba(0, 0, 0, 0.794);
+        }
+        #mainInput{
+            outline:none;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="Register" v-show="show3==true"  @keyup.enter="Login">
+            <h2>{{title}}</h2>
+            <input class="input" v-model="username"type="text" placeholder="Username" ><br>
+            <input class="input" v-model="password"type="password" placeholder="Password"><br>
+            <input class="input" v-model="phone"type="text" placeholder="Phone" v-show="show1==true"><br v-show="show1==true">
+            <input class="input" v-model="email"type="text" placeholder="Email" v-show="show1==true" ><br v-show="show1==true">
+            <input type="button" id="submit" v-model:value="submit" @click="Login"></input><br>
+            <small v-show="show2">Already have an account,<a href="javascript:;" @click="Change">log in</a></small>
+            <small v-show="!show2">You don't have an account yet,<a href="javascript:;" @click="Change">sign up</a></a></small>
+        </div>
+        <div id="todolist" v-show="show3==false">
+            <h1>todolist</h1>
+            <input type="text" id="mainInput" v-model="msg" placeholder="请输入，按回车确认" @keyup.enter="Submit" autofocus="autofocus"></input>
+            <div id="listHead">
+                <span class="{'active':show0==true}" @click="all">全部:{{items.length}}</span>
+                <span class="{'active':show0==true}" @click="done">已完成:{{doneNum}} </span>
+                <span class="{'active':show0==true}" @click="todo">未完成:{{todoNum}}</span>
+            </div>
+            <ul id="list">
+                <li v-for="(item,index) in newItems" 
+                    :class="{deleted:newItems[index].status==true}" 
+                    @click.self="ChangeType(index)" 
+                    :key="item.value+index">
+                    {{item.value}}
+                    <input class="Delete" type="button" value="x" @click.stop="Delete(index)"></input>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        let app = new Vue({
+            el:"#main",
+            data:{
+                username:'',
+                password:'',
+                phone:'',
+                email:'',
+                title:"Login",
+                submit:"Log in",
+                show1:false, //电话，电子邮箱
+                show2:false,//提示，a标签
+                show3:true,//登录界面/todolist
+                flag:true,
+                msg:'',
+                items:[],
+                newItems:[]
+            },
+            methods: {
+                Change(){
+                    this.show1=!this.show1;
+                    this.submit=this.submit==="Sign up"?"Log in":"Sign up";
+                    this.show2=!this.show2;
+                    this.title=this.title==="Login"?"Register":"Login";
+                    this.username='';
+                    this.password='';
+                    this.phone='';
+                    this.email='';
+                },
+                Login(){
+                    if(this.show1==false){
+                        if(this.username!=''&&this.password!=''){
+                            this.show3=false;
+                        }if(this.username==''){
+                            alert("账号为空！");
+                        }else if(this.password==''){
+                            alert("密码为空！");
+                        }
+                    }else{
+                        if(this.username==''){
+                            alert("账号为空！");
+                        }else if(this.password==''){
+                            alert("密码为空！");
+                        }else if(this.phone==''){
+                            alert("电话为空！");
+                        }else if(this.email==''){
+                            alert("邮箱为空！");
+                        }else{
+                            this.show3 = false ;
+                        }
+                    //    if(this.username!=''&&this.password!=''&&this.phone!=''&&this.email!=''){
+                    //        this.show3 = false ;
+                    //    }else{
+                    //        alert ("")
+                    //    }
+                    }
+                    
+                },
+                Submit(){
+                    if(this.msg!=''){
+                        this.items.push({value:this.msg,status:false});
+                        this.newItems.splice(0);
+                        for(let i in this.items){
+                            this.newItems.push(this.items[i]);
+                        }
+                        this.msg='';  
+                    }
+                },
+                Delete(index){
+                    this.items.splice(index,1);
+                    this.newItems.splice(0);
+                    for(let i in this.items){
+                        this.newItems.push(this.items[i]);
+                    }
+                },
+                ChangeType(index){
+                    let status,value;
+                    for(let p in this.items){
+                        if(this.items[p].value===this.newItems[index].value){
+                            this.items[p].status=!this.items[p].status ;
+                            let value = this.newItems[index].value ;
+                            let status = this.items[p].status ;
+                            this.newItems.splice(index,1 , {value,status});
+                        }
+                    }
+                    if(!this.flag){
+                        this.newItems.splice(index,1);
+                    }
+                },
+                all(){
+                    this.newItems.splice(0);
+                    for(let i in this.items){
+                        this.newItems.push(this.items[i]);
+                    }
+                    this.flag = true ;
+                },
+                done(){
+                    this.newItems.splice(0);
+                    for(let i in this.items){
+                        if(this.items[i].status==true){
+                            this.newItems.push(this.items[i]);
+                        }
+                    }
+                    this.flag = false ;
+                },
+                todo(){
+                    this.newItems.splice(0);
+                    for(let i in this.items){
+                        if(this.items[i].status==false){
+                            this.newItems.push(this.items[i]);
+                        }
+                    }
+                    this.flag = false ;
+                }
+            },
+            computed: {
+                doneNum(){
+                    let num = 0 ;
+                    for( let p of this.items){
+                        if(p.status==true) num ++ ;
+                    }
+                    return num ;
+                },
+                todoNum(){
+                    let num = 0 ;
+                    for (let p of this.items){
+                        if(p.status == false ) num ++ ;
+                    }
+                    return num ;
+                }
+            }
+        })
+    </script>
+</body>
+</html>
